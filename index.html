@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <!--
-  BeyMeta Tool Dashboard Template v2.2.1
+  BeyMeta Tool Dashboard Template v2.4.0
   Changelog:
+  - v2.4.0: Overview redesign — 3 quick card (Top Combo, Top Bit, Trend ↑) sotto l'hero;
+            Nav unificata a 5 tab (Parts/Synergies/Efficiency spostati in accordion dentro Blades/Combos);
+            Fix glow desktop — box-shadow .win-btn.active dimezzato
+  - v2.3.0: Blade images — miniature PNG con sfondo trasparente in Meta Blades e Top Combos;
+            lazy loading nativo, fallback graceful se immagine mancante
   - v2.2.1: CSS polish — transform 3D hover (lift effect), clamp() tipografia responsive,
             focus-visible accessibilità, scroll-behavior smooth
   - v2.2.0: Visual upgrade — CSS custom properties (spacing/shadow/radius), glassmorphism
@@ -20,8 +25,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>BeyMeta Tool — by Nimalus</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 <style>
 :root {
   --bg:       #0A0A0A;
@@ -60,7 +66,7 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-size: 16px;
   min-height: 100vh;
   padding-bottom: calc(var(--nav-h) + 16px);
@@ -87,7 +93,8 @@ body {
   background-clip: text; line-height: 1; flex-shrink: 0;
 }
 .logo span {
-  font-size: 0.55rem; font-family: 'Rajdhani', sans-serif; font-weight: 600;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem; font-weight: 600;
   letter-spacing: 1px; display: block; background: none;
   -webkit-text-fill-color: var(--muted); color: var(--muted);
   text-transform: uppercase; margin-top: -2px;
@@ -99,7 +106,7 @@ body {
 }
 .lang-btn button {
   background: none; border: none; color: var(--muted);
-  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.75rem;
+  font-weight: 600; font-size: 0.8rem;
   padding: 5px 10px; cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
 }
 .lang-btn button.active {
@@ -116,7 +123,7 @@ body {
 }
 .win-btn.active {
   background: var(--primary); border-color: var(--primary); color: #fff;
-  box-shadow: 0 0 16px rgba(232,64,28,0.4);
+  box-shadow: 0 0 8px rgba(232,64,28,0.3);
 }
 
 /* ═══ SECTION NAV (horizontal scroll) ═══ */
@@ -125,8 +132,8 @@ body {
 .sec-nav-inner { display: flex; gap: 4px; min-width: max-content; }
 .sec-nav-btn {
   padding: 7px 13px; border-radius: 6px; white-space: nowrap;
-  background: none; border: none; font-family: 'Rajdhani', sans-serif;
-  font-weight: 700; font-size: 0.82rem; color: var(--muted);
+  background: none; border: none;
+  font-weight: 600; font-size: 0.88rem; color: var(--muted);
   cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
   text-transform: uppercase;
 }
@@ -148,6 +155,54 @@ body {
   -webkit-text-fill-color: transparent; background-clip: text;
 }
 .section-sub { color: var(--muted); font-size: 0.85rem; font-weight: 500; margin-bottom: 16px; }
+
+/* ═══ LUCIDE ICONS ═══ */
+.nav-lucide    { width: 18px; height: 18px; stroke: currentColor; vertical-align: middle; display: inline-block; }
+.sec-nav-lucide{ width: 14px; height: 14px; stroke: currentColor; vertical-align: middle; margin-right: 3px; }
+.trend-lucide  { width: 15px; height: 15px; stroke: currentColor; vertical-align: middle; }
+.trend-lucide.up   { stroke: var(--green); }
+.trend-lucide.down { stroke: var(--red); }
+.trend-lucide.stable { stroke: var(--muted); }
+.donate-lucide { width: 15px; height: 15px; stroke: currentColor; vertical-align: middle; margin-right: 6px; flex-shrink: 0; }
+
+/* ═══ HERO STAT ═══ */
+.hero-stat {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 16px; padding: 14px 16px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.hero-main {
+  display: flex; align-items: center; gap: 12px;
+  flex: 1; min-width: 0;
+  border-right: 1px solid var(--border); padding-right: 14px;
+}
+.hero-img { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; }
+.hero-main-text { min-width: 0; }
+.hero-main-val {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem;
+  color: var(--text); line-height: 1.1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hero-main-label {
+  font-size: 0.72rem; font-weight: 600;
+  color: var(--primary); letter-spacing: 1.5px; margin-top: 3px;
+}
+.hero-combo-parts {
+  font-size: 0.78rem; font-weight: 500;
+  color: var(--secondary); letter-spacing: 0.5px; margin-top: 2px;
+}
+.hero-side { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.hero-divider { width: 1px; height: 30px; background: var(--border); }
+.hero-item { text-align: center; }
+.hero-item-val {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.35rem;
+  color: var(--secondary); line-height: 1;
+}
+.hero-item-label {
+  font-size: 0.7rem; font-weight: 500;
+  color: var(--muted); letter-spacing: 1px; margin-top: 3px;
+}
 
 /* ═══ KPI STRIP ═══ */
 .kpi-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
@@ -201,7 +256,7 @@ body {
 .rank-2 { color: var(--silver); }
 .rank-3 { color: var(--bronze); }
 .rank-n { color: var(--muted); }
-.blade-name { font-weight: 700; font-size: 1rem; flex: 1; position: relative; z-index: 1; }
+.blade-name { font-size: 1.1rem; font-weight: 600; flex: 1; position: relative; z-index: 1; }
 .blade-pts {
   font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem;
   color: var(--secondary); position: relative; z-index: 1;
@@ -213,6 +268,10 @@ body {
 .blade-extra {
   font-size: 0.7rem; color: var(--muted); font-weight: 500;
   position: relative; z-index: 1; text-align: right;
+}
+.blade-img {
+  width: 40px; height: 40px; object-fit: contain;
+  flex-shrink: 0; position: relative; z-index: 1;
 }
 
 /* ═══ CHARTS ═══ */
@@ -235,8 +294,8 @@ body {
 /* ═══ SHOW MORE ═══ */
 .show-more-btn {
   width: 100%; background: var(--surface2); border: 1px dashed var(--border);
-  border-radius: 8px; color: var(--muted); font-family: 'Rajdhani', sans-serif;
-  font-weight: 700; font-size: 0.9rem; padding: 10px; cursor: pointer;
+  border-radius: 8px; color: var(--muted);
+  font-weight: 600; font-size: 0.9rem; padding: 10px; cursor: pointer;
   margin-top: 6px; transition: all 0.2s; letter-spacing: 0.5px;
 }
 .show-more-btn:hover { color: var(--primary); border-color: var(--primary); }
@@ -247,8 +306,8 @@ body {
 .combo-search-wrap input {
   width: 100%; box-sizing: border-box;
   background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 10px; color: var(--text); font-family: 'Rajdhani', sans-serif;
-  font-weight: 600; font-size: 0.9rem; padding: 8px 12px 8px 34px;
+  border-radius: 10px; color: var(--text);
+  font-weight: 500; font-size: 0.95rem; padding: 8px 12px 8px 34px;
   outline: none; transition: border-color 0.2s;
 }
 .combo-search-wrap input:focus { border-color: var(--primary); }
@@ -267,8 +326,8 @@ body {
 .combo-filter::-webkit-scrollbar { display: none; }
 .filter-chip {
   flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 20px; color: var(--muted); font-family: 'Rajdhani', sans-serif;
-  font-weight: 700; font-size: 0.8rem; padding: 5px 12px; cursor: pointer;
+  border-radius: 20px; color: var(--muted);
+  font-weight: 600; font-size: 0.85rem; padding: 5px 12px; cursor: pointer;
   transition: all 0.2s; white-space: nowrap;
 }
 .filter-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
@@ -277,17 +336,20 @@ body {
 .combo-card {
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: 10px; padding: 12px 14px;
-  display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center;
+  display: grid; grid-template-columns: 28px 40px 1fr auto; gap: 8px; align-items: center;
   transition: border-color 0.2s;
 }
 .combo-card:hover { border-color: rgba(232,64,28,0.4); }
 .combo-rank { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; text-align: center; }
-.combo-name { font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 2px; }
+.combo-name { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
 .combo-parts { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
 .combo-parts .part-sep { margin: 0 4px; opacity: 0.4; }
 .combo-stats { text-align: right; }
 .combo-pts { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--secondary); }
 .combo-wins { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+.combo-img {
+  width: 36px; height: 36px; object-fit: contain;
+}
 
 /* ═══ TREND BADGES ═══ */
 
@@ -303,12 +365,12 @@ body {
 .trend-bar-card-title.rising { color: #22c55e; }
 .trend-bar-card-title.falling { color: #ef4444; }
 .trend-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.trend-bar-label { font-size: 0.78rem; font-weight: 700; width: 90px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.trend-bar-track { flex: 1; background: var(--surface); border-radius: 4px; height: 14px; overflow: hidden; }
-.trend-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 4px; min-width: 2px; transition: width 0.4s ease; }
-.trend-bar-fill.rising { background: rgba(34,197,94,0.7); }
-.trend-bar-fill.falling { background: rgba(239,68,68,0.7); }
-.trend-bar-val { font-size: 0.65rem; font-weight: 700; color: #fff; white-space: nowrap; }
+.trend-bar-label { font-size: 0.88rem; font-weight: 700; width: 100px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trend-bar-track { flex: 1; background: var(--surface); border-radius: 4px; height: 18px; overflow: hidden; }
+.trend-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; min-width: 2px; transition: width 0.4s ease; }
+.trend-bar-fill.rising { background: rgba(34,197,94,0.8); }
+.trend-bar-fill.falling { background: rgba(239,68,68,0.8); }
+.trend-bar-val { font-size: 0.8rem; font-weight: 700; color: #fff; white-space: nowrap; }
 .sparkline-wrap { display: inline-block; vertical-align: middle; margin-left: 6px; }
 
 .trend-grid {
@@ -348,7 +410,7 @@ body {
   background: var(--grad); transition: width 0.6s cubic-bezier(.4,0,.2,1);
 }
 .mini-bar-fill.purple { background: linear-gradient(135deg, var(--purple), #7c3aed); }
-.mini-bar-val { font-family: 'Bebas Neue', sans-serif; font-size: 0.75rem; color: #fff; letter-spacing: 0.5px; }
+.mini-bar-val { font-size: 0.8rem; font-weight: 600; color: #fff; letter-spacing: 0.5px; }
 
 /* ═══ SYNERGY CARDS ═══ */
 .syn-grid { display: flex; flex-direction: column; gap: 10px; }
@@ -362,14 +424,14 @@ body {
 }
 .syn-bits { display: flex; flex-wrap: wrap; gap: 6px; }
 .syn-bit {
-  padding: 5px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;
+  padding: 6px 12px; border-radius: 6px; font-size: 0.9rem;
   background: var(--surface2); border: 1px solid var(--border); color: var(--text);
 }
 .syn-bit:first-child {
   background: rgba(232,64,28,0.12); border-color: rgba(232,64,28,0.4);
   color: var(--secondary);
 }
-.syn-bit-sub { font-size: 0.65rem; color: var(--muted); display: block; }
+.syn-bit-sub { font-size: 0.75rem; color: var(--muted); display: block; }
 
 /* ═══ EFFICIENCY TABLE ═══ */
 .eff-row {
@@ -381,7 +443,7 @@ body {
   font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem;
   min-width: 28px; text-align: center; flex-shrink: 0;
 }
-.eff-name { font-weight: 700; flex: 1; }
+.eff-name { flex: 1; font-weight: 600; }
 .eff-score {
   font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem;
   color: var(--secondary);
@@ -442,18 +504,18 @@ body {
 .donate-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .donate-note { margin-top: 14px; font-size: 0.78rem; color: var(--muted); font-style: italic; }
 .donate-what {
-  text-align: left; max-width: 440px; margin: 20px auto 0;
+  text-align: left; max-width: 480px; margin: 20px auto 0;
 }
 .donate-what-item {
-  display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px;
-  font-size: 0.85rem; color: var(--muted); font-weight: 500; line-height: 1.5;
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  font-size: 1rem; color: var(--muted); font-weight: 500; line-height: 1.5;
 }
 .donate-what-icon { flex-shrink: 0; }
 .about-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 16px 20px;
 }
-.about-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; font-weight: 500; }
+.about-card p { color: var(--muted); font-size: 1rem; line-height: 1.7; font-weight: 500; }
 .about-card p + p { margin-top: 8px; }
 .about-handle {
   display: inline-block; background: var(--surface2); border: 1px solid var(--border);
@@ -471,12 +533,50 @@ body {
 .inline-donate-text strong { color: var(--text); }
 .inline-donate-btn {
   display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;
-  border-radius: 24px; font-family: 'Bebas Neue', sans-serif;
-  font-size: 0.85rem; letter-spacing: 1px; text-decoration: none;
+  border-radius: 24px;
+  font-size: 0.9rem; font-weight: 600; letter-spacing: 1px; text-decoration: none;
   background: var(--grad); color: #fff; transition: all 0.2s; flex-shrink: 0;
   box-shadow: 0 2px 10px rgba(232,64,28,0.3);
 }
 .inline-donate-btn:hover { transform: translateY(-1px); }
+
+/* ═══ OVERVIEW QUICK CARDS ═══ */
+.overview-quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+@media (max-width: 480px) { .overview-quick { grid-template-columns: 1fr; } }
+.ov-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+}
+.ov-card-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  color: var(--primary); letter-spacing: 1.5px; margin-bottom: 4px;
+}
+.ov-card-val {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem;
+  color: var(--text); line-height: 1.2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ov-card-sub {
+  font-size: 0.78rem; font-weight: 500;
+  color: var(--muted); margin-top: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ov-trend-up { color: var(--green); }
+
+/* ═══ ACCORDION ═══ */
+.accordion-wrap { margin-top: 16px; }
+.accordion-btn {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--muted);
+  font-size: 0.95rem; font-weight: 600;
+  letter-spacing: 0.5px; padding: 10px 14px; cursor: pointer;
+  text-align: left; transition: all 0.2s; display: flex;
+  align-items: center; justify-content: space-between; margin-bottom: 4px;
+}
+.accordion-btn:hover { color: var(--primary); border-color: rgba(232,64,28,0.4); }
+.accordion-btn.open { color: var(--primary); border-color: rgba(232,64,28,0.4); border-radius: var(--radius-sm) var(--radius-sm) 0 0; margin-bottom: 0; }
+.accordion-content { display: none; border: 1px solid rgba(232,64,28,0.3); border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); padding: 12px; margin-bottom: 4px; }
+.accordion-content.open { display: block; }
 
 /* ═══ BOTTOM NAV ═══ */
 #bottom-nav {
@@ -488,8 +588,8 @@ body {
 .nav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center;
   justify-content: center; gap: 3px; background: none; border: none;
-  cursor: pointer; color: var(--muted); font-family: 'Rajdhani', sans-serif;
-  font-weight: 700; font-size: 0.6rem; text-transform: uppercase;
+  cursor: pointer; color: var(--muted);
+  font-weight: 600; font-size: 0.65rem; text-transform: uppercase;
   letter-spacing: 0.5px; transition: color 0.2s; position: relative; padding-top: 4px;
 }
 .nav-item.active { color: var(--primary); }
@@ -520,8 +620,7 @@ body {
   .trend-bar-label { font-size: 0.92rem; width: 110px; }
   .eff-name { font-size: 1.06rem; }
   .eff-detail { font-size: 0.86rem; }
-  .syn-bit-name { font-size: 0.9rem; }
-  .syn-bit-sub { font-size: 0.78rem; }
+.syn-bit-sub { font-size: 0.78rem; }
   .card-title { font-size: 0.96rem; }
 }
 
@@ -606,26 +705,18 @@ body {
 }
 .combo-card:hover {
   box-shadow: var(--shadow-card);
-  transform: translateY(-1px);
 }
 .trend-badge-card {
   transition: transform var(--transition-fast), box-shadow var(--transition-med);
 }
 .trend-badge-card:hover {
   box-shadow: var(--shadow-card);
-  transform: translateY(-2px);
 }
 .blade-row {
   transition: transform var(--transition-fast), background var(--transition-med);
 }
-.blade-row:hover {
-  background: rgba(28, 28, 28, 0.9);
-}
 .eff-row {
   transition: transform var(--transition-fast), background var(--transition-med);
-}
-.eff-row:hover {
-  background: rgba(28, 28, 28, 0.9);
 }
 .win-btn {
   transition: all var(--transition-med);
@@ -790,9 +881,11 @@ body {
   transform: translateY(-4px) scale(1.01);
 }
 .blade-row:hover {
+  background: rgba(28, 28, 28, 0.9);
   transform: translateY(-4px) scale(1.01);
 }
 .eff-row:hover {
+  background: rgba(28, 28, 28, 0.9);
   transform: translateY(-4px) scale(1.01);
 }
 
@@ -865,14 +958,11 @@ html {
 <!-- SECTION NAV -->
 <nav class="sec-nav">
   <div class="sec-nav-inner">
-    <button class="sec-nav-btn active" data-s="overview" onclick="go('overview')"><span class="l" data-en="Overview" data-it="Panoramica">Overview</span></button>
-    <button class="sec-nav-btn" data-s="blades" onclick="go('blades')">⚔️ <span class="l" data-en="Blades" data-it="Blade">Blades</span></button>
-    <button class="sec-nav-btn" data-s="combos" onclick="go('combos')">🔩 <span class="l" data-en="Combos" data-it="Combo">Combos</span></button>
-    <button class="sec-nav-btn" data-s="trend" onclick="go('trend')">📈 Trend</button>
-    <button class="sec-nav-btn" data-s="parts" onclick="go('parts')">⚙️ Bits & Ratchets</button>
-    <button class="sec-nav-btn" data-s="synergies" onclick="go('synergies')">🤝 <span class="l" data-en="Synergies" data-it="Sinergie">Synergies</span></button>
-    <button class="sec-nav-btn" data-s="efficiency" onclick="go('efficiency')">💡 <span class="l" data-en="Efficiency" data-it="Efficienza">Efficiency</span></button>
-    <button class="sec-nav-btn donate-tab" data-s="donate" onclick="go('donate')">❤️ <span class="l" data-en="Donate" data-it="Dona">Donate</span></button>
+    <button class="sec-nav-btn active" data-s="overview" onclick="go('overview')"><i data-lucide="layout-dashboard" class="sec-nav-lucide"></i><span class="l" data-en="Overview" data-it="Panoramica">Overview</span></button>
+    <button class="sec-nav-btn" data-s="blades" onclick="go('blades')"><i data-lucide="swords" class="sec-nav-lucide"></i><span class="l" data-en="Blades" data-it="Blade">Blades</span></button>
+    <button class="sec-nav-btn" data-s="combos" onclick="go('combos')"><i data-lucide="layers" class="sec-nav-lucide"></i><span class="l" data-en="Combos" data-it="Combo">Combos</span></button>
+    <button class="sec-nav-btn" data-s="trend" onclick="go('trend')"><i data-lucide="trending-up" class="sec-nav-lucide"></i>Trend</button>
+    <button class="sec-nav-btn donate-tab" data-s="donate" onclick="go('donate')"><i data-lucide="heart" class="sec-nav-lucide"></i><span class="l" data-en="Donate" data-it="Dona">Donate</span></button>
   </div>
 </nav>
 
@@ -888,11 +978,11 @@ html {
 
 <!-- BOTTOM NAV -->
 <div id="bottom-nav">
-  <button class="nav-item active" data-s="overview" onclick="go('overview')"><span class="nav-icon">🏠</span><span class="l" data-en="Home" data-it="Home">Home</span></button>
-  <button class="nav-item" data-s="blades" onclick="go('blades')"><span class="nav-icon">⚔️</span><span class="l" data-en="Blades" data-it="Blade">Blades</span></button>
-  <button class="nav-item" data-s="combos" onclick="go('combos')"><span class="nav-icon">🔩</span><span class="l" data-en="Combos" data-it="Combo">Combos</span></button>
-  <button class="nav-item" data-s="trend" onclick="go('trend')"><span class="nav-icon">📈</span>Trend</button>
-  <button class="nav-item" data-s="donate" onclick="go('donate')"><span class="nav-icon">❤️</span><span class="l" data-en="Donate" data-it="Dona">Donate</span></button>
+  <button class="nav-item active" data-s="overview" onclick="go('overview')"><span class="nav-icon"><i data-lucide="home" class="nav-lucide"></i></span><span class="l" data-en="Home" data-it="Home">Home</span></button>
+  <button class="nav-item" data-s="blades" onclick="go('blades')"><span class="nav-icon"><i data-lucide="swords" class="nav-lucide"></i></span><span class="l" data-en="Blades" data-it="Blade">Blades</span></button>
+  <button class="nav-item" data-s="combos" onclick="go('combos')"><span class="nav-icon"><i data-lucide="layers" class="nav-lucide"></i></span><span class="l" data-en="Combos" data-it="Combo">Combos</span></button>
+  <button class="nav-item" data-s="trend" onclick="go('trend')"><span class="nav-icon"><i data-lucide="trending-up" class="nav-lucide"></i></span>Trend</button>
+  <button class="nav-item" data-s="donate" onclick="go('donate')"><span class="nav-icon"><i data-lucide="heart" class="nav-lucide"></i></span><span class="l" data-en="Donate" data-it="Dona">Donate</span></button>
 </div>
 
 <script>
@@ -929,7 +1019,7 @@ const L = {
     inlineDonate:'Enjoy the data?', inlineDonateBtn:'☕ Support',
     showAll:'▼ Show all', showLess:'▲ Show less',
     apps:'apps', wins:'W', updated:'Updated', searchCombo:'Search blade, ratchet or bit…', noResults:'No combos found', noData:'No data available for this time window', noDataSub:'Try selecting a wider time window (60 or 90 days)',
-    trendChart:'Top 6 — Trend Lines', trendChartSub:'Points per time period', trendRising:'🟢 Top 5 Rising', trendFalling:'🔴 Top 5 Falling',
+    trendChart:'Top 6 — Trend Lines', trendChartSub:'Points per time period', trendRising:'↑ Top 5 Rising', trendFalling:'↓ Top 5 Falling',
   },
   it: {
     overview:'Panoramica', bladesTracked:'Blade Tracciate', topPts:'Top Punti',
@@ -957,7 +1047,7 @@ const L = {
     inlineDonate:'Ti piacciono i dati?', inlineDonateBtn:'☕ Supporta',
     showAll:'▼ Mostra tutto', showLess:'▲ Mostra meno',
     apps:'app', wins:'V', updated:'Aggiornato', searchCombo:'Cerca blade, ratchet o bit…', noResults:'Nessuna combo trovata', noData:'Nessun dato disponibile per questa finestra temporale', noDataSub:'Prova a selezionare una finestra più ampia (60 o 90 giorni)',
-    trendChart:'Top 6 — Linee di Trend', trendChartSub:'Punti per periodo temporale', trendRising:'🟢 Top 5 in Salita', trendFalling:'🔴 Top 5 in Discesa',
+    trendChart:'Top 6 — Linee di Trend', trendChartSub:'Punti per periodo temporale', trendRising:'↑ Top 5 in Salita', trendFalling:'↓ Top 5 in Discesa',
   }
 };
 
@@ -965,7 +1055,7 @@ function t(k) { return L[lang]?.[k] || L.en[k] || k; }
 
 
 function dd() { return DATA[win]; }
-function rankIcon(r) { return r===1?'🥇':r===2?'🥈':r===3?'🥉':'#'+r; }
+function rankIcon(r) { return r<=3 ? r : '#'+r; }
 function rankCls(r) { return r===1?'rank-1':r===2?'rank-2':r===3?'rank-3':'rank-n'; }
 
 // ═══ NAV ═══
@@ -1001,22 +1091,58 @@ function inlineDonate() {
 
 // ═══ OVERVIEW ═══
 function renderOverview() {
-  const b = dd().metaBlades, c = dd().topCombos, bi = dd().metaBits;
-  if (!b || b.length === 0) return `<div class="section-title">🏠 ${t('overview')}</div>${emptyState()}`;
+  const b = dd().metaBlades, c = dd().topCombos, bi = dd().metaBits, tr = dd().metaTrend;
+  if (!b || b.length === 0) return `<div class="section-title">${t('overview')}</div>${emptyState()}`;
   const total = b.reduce((s,x) => s+(x.apps||0), 0);
+  const topCombo = c && c.length ? c[0] : null;
+  const topBit   = bi && bi.length ? bi[0] : null;
+  const topRising = tr ? tr.find(x => x.trendPct > 0) : null;
   return `
-    <div class="section-title">🏠 ${t('overview')}</div>
-    <div class="kpi-strip">
-      <div class="kpi-card"><div class="kpi-val" style="font-size:1.2rem">${b[0].blade}</div><div class="kpi-label">${t('topBlade')}</div></div>
-      <div class="kpi-card"><div class="kpi-val">${b[0].pts.toLocaleString()}</div><div class="kpi-label">${t('topPts')}</div></div>
-      <div class="kpi-card"><div class="kpi-val">${total.toLocaleString()}</div><div class="kpi-label">${t('totalEntries')}</div></div>
+    <div class="section-title">${t('overview')}</div>
+    <div class="hero-stat">
+      <div class="hero-main">
+        ${bladeImg(b[0].blade, 'hero-img')}
+        <div class="hero-main-text">
+          <div class="hero-main-val">${b[0].blade}</div>
+          <div class="hero-main-label">${t('topBlade')}</div>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="hero-item">
+          <div class="hero-item-val">${b[0].pts.toLocaleString()}</div>
+          <div class="hero-item-label">${t('topPts')}</div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-item">
+          <div class="hero-item-val">${total.toLocaleString()}</div>
+          <div class="hero-item-label">${t('totalEntries')}</div>
+        </div>
+      </div>
+    </div>
+    <div class="overview-quick">
+      <div class="ov-card">
+        <div class="ov-card-label">${t('topCombo')}</div>
+        <div class="ov-card-val">${topCombo ? topCombo.blade : '—'}</div>
+        <div class="ov-card-sub">${topCombo ? topCombo.ratchet + ' · ' + topCombo.bit : ''}</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-card-label">${t('topBit')}</div>
+        <div class="ov-card-val">${topBit ? topBit.name : '—'}</div>
+        <div class="ov-card-sub">${topBit ? topBit.pts + ' pts' : ''}</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-card-label">Trend ↑</div>
+        <div class="ov-card-val ov-trend-up">${topRising ? topRising.blade : '—'}</div>
+        <div class="ov-card-sub">${topRising ? '+' + Math.abs(topRising.trendPct) + '%' : ''}</div>
+      </div>
     </div>
     <div class="card">
-      <div class="card-title">🏆 Top 3</div>
+      <div class="card-title">Top 3</div>
       <div class="blade-list">${b.slice(0,3).map((x,i) => `
         <div class="blade-row" style="--i:${i}">
           <div class="blade-bar-bg" style="width:${(x.pts/b[0].pts*100).toFixed(0)}%"></div>
           <div class="blade-rank ${rankCls(x.rank)}">${rankIcon(x.rank)}</div>
+          ${bladeImg(x.blade, 'blade-img')}
           <div class="blade-name">${x.blade}</div>
           <div><div class="blade-pts">${x.pts.toLocaleString()}</div><div class="blade-wins">${x.wins} ${t('wins')} · ${x.apps} ${t('apps')}</div></div>
         </div>`).join('')}
@@ -1026,18 +1152,41 @@ function renderOverview() {
 }
 
 // ═══ BLADES ═══
+function bladeImg(name, cls) {
+  const src = 'blade_images/' + name
+    .replace(/([a-z])([A-Z])/g, '$1_$2')
+    .toLowerCase()
+    .replace(/\s+/g, '_') + '.png';
+  return `<img src="${src}" alt="${name}" class="${cls}" loading="lazy" onerror="this.style.display='none'">`;
+}
+
 function renderBlades() {
   const blades = dd().metaBlades;
-  if (!blades || blades.length === 0) return `<div class="section-title">⚔️ <em>${t('metaBlades')}</em></div>${emptyState()}`;
+  if (!blades || blades.length === 0) return `<div class="section-title"><em>${t('metaBlades')}</em></div>${emptyState()}`;
   const show = expanded.blades ? blades.length : 10;
   const maxPts = blades[0].pts;
   return `
-    <div class="section-title">⚔️ <em>${t('metaBlades')}</em></div>
+    <div class="section-title"><em>${t('metaBlades')}</em></div>
     <div class="section-sub">${t('metaBladesSub')}</div>
-    <div class="kpi-strip">
-      <div class="kpi-card"><div class="kpi-val">${blades.length}</div><div class="kpi-label">${t('bladesTracked')}</div></div>
-      <div class="kpi-card"><div class="kpi-val" style="font-size:1.1rem">${blades[0].blade}</div><div class="kpi-label">${t('topBlade')}</div></div>
-      <div class="kpi-card"><div class="kpi-val">${blades[0].pts.toLocaleString()}</div><div class="kpi-label">${t('topPts')}</div></div>
+    <div class="hero-stat">
+      <div class="hero-main">
+        ${bladeImg(blades[0].blade, 'hero-img')}
+        <div class="hero-main-text">
+          <div class="hero-main-val">${blades[0].blade}</div>
+          <div class="hero-main-label">${t('topBlade')}</div>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="hero-item">
+          <div class="hero-item-val">${blades[0].pts.toLocaleString()}</div>
+          <div class="hero-item-label">${t('topPts')}</div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-item">
+          <div class="hero-item-val">${blades.length}</div>
+          <div class="hero-item-label">${t('bladesTracked')}</div>
+        </div>
+      </div>
     </div>
     <div class="chart-wrap">
       <div class="chart-title">${t('top10')}</div>
@@ -1049,6 +1198,7 @@ function renderBlades() {
         <div class="blade-row" style="--i:${i}">
           <div class="blade-bar-bg" style="width:${(b.pts/maxPts*100).toFixed(0)}%"></div>
           <div class="blade-rank ${rankCls(b.rank)}">${rankIcon(b.rank)}</div>
+          ${bladeImg(b.blade, 'blade-img')}
           <div class="blade-name">${b.blade}</div>
           <div>
             <div class="blade-pts">${b.pts.toLocaleString()}</div>
@@ -1057,6 +1207,18 @@ function renderBlades() {
         </div>`).join('')}
       </div>
       ${blades.length > 10 ? `<button class="show-more-btn" onclick="expanded.blades=!expanded.blades;render()">${expanded.blades ? t('showLess') : t('showAll')+' '+blades.length}</button>` : ''}
+    </div>
+    <div class="accordion-wrap">
+      <button class="accordion-btn${expanded.bladeSyn?' open':''}" onclick="expanded.bladeSyn=!expanded.bladeSyn;render()">
+        <span><i data-lucide="git-merge" class="sec-nav-lucide"></i> <span class="l" data-en="Synergies" data-it="Sinergie">Synergies</span></span>
+        <span>${expanded.bladeSyn?'▲':'▼'}</span>
+      </button>
+      <div class="accordion-content${expanded.bladeSyn?' open':''}">${expanded.bladeSyn ? renderSynergies(true) : ''}</div>
+      <button class="accordion-btn${expanded.bladeEff?' open':''}" onclick="expanded.bladeEff=!expanded.bladeEff;render()">
+        <span><i data-lucide="zap" class="sec-nav-lucide"></i> <span class="l" data-en="Efficiency" data-it="Efficienza">Efficiency</span></span>
+        <span>${expanded.bladeEff?'▲':'▼'}</span>
+      </button>
+      <div class="accordion-content${expanded.bladeEff?' open':''}">${expanded.bladeEff ? renderEfficiency(true) : ''}</div>
     </div>
     ${inlineDonate()}`;
 }
@@ -1074,7 +1236,7 @@ function emptyState() {
 // ═══ COMBOS ═══
 function renderCombos() {
   const all = dd().topCombos;
-  if (!all || all.length === 0) return `<div class="section-title">🔩 <em>${t('topCombos')}</em></div>${emptyState()}`;
+  if (!all || all.length === 0) return `<div class="section-title"><em>${t('topCombos')}</em></div>${emptyState()}`;
   const q = comboSearch.trim().toLowerCase();
   const combos = q ? all.filter(c =>
     c.blade.toLowerCase().includes(q) ||
@@ -1083,12 +1245,28 @@ function renderCombos() {
   ) : all;
   const show = expanded.combos ? combos.length : 10;
   return `
-    <div class="section-title">🔩 <em>${t('topCombos')}</em></div>
+    <div class="section-title"><em>${t('topCombos')}</em></div>
     <div class="section-sub">${t('topCombosSub')}</div>
-    <div class="kpi-strip">
-      <div class="kpi-card"><div class="kpi-val">${all.length}</div><div class="kpi-label">${t('combosTracked')}</div></div>
-      <div class="kpi-card"><div class="kpi-val" style="font-size:0.95rem;line-height:1.2">${all[0].blade} ${all[0].ratchet} ${all[0].bit}</div><div class="kpi-label">${t('topCombo')}</div></div>
-      <div class="kpi-card"><div class="kpi-val">${all[0].wins||0}</div><div class="kpi-label">${t('topWins')}</div></div>
+    <div class="hero-stat">
+      <div class="hero-main">
+        ${bladeImg(all[0].blade, 'hero-img')}
+        <div class="hero-main-text">
+          <div class="hero-main-val">${all[0].blade}</div>
+          <div class="hero-main-label">${t('topCombo')}</div>
+          <div class="hero-combo-parts">${all[0].ratchet} · ${all[0].bit}</div>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="hero-item">
+          <div class="hero-item-val">${all[0].wins||0}</div>
+          <div class="hero-item-label">${t('topWins')}</div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-item">
+          <div class="hero-item-val">${all.length}</div>
+          <div class="hero-item-label">${t('combosTracked')}</div>
+        </div>
+      </div>
     </div>
     <div class="combo-search-wrap">
       <span class="combo-search-icon">🔍</span>
@@ -1103,6 +1281,7 @@ function renderCombos() {
       : combos.slice(0,show).map(c => `
       <div class="combo-card">
         <div class="combo-rank ${rankCls(c.rank)}">${rankIcon(c.rank)}</div>
+        ${bladeImg(c.blade, 'combo-img')}
         <div>
           <div class="combo-name">${c.blade}</div>
           <div class="combo-parts"><span style="color:var(--secondary)">${c.ratchet}</span><span class="part-sep">|</span><span>${c.bit}</span><span class="part-sep">·</span><span>${c.apps} ${t('apps')}</span></div>
@@ -1111,13 +1290,20 @@ function renderCombos() {
       </div>`).join('')}
     </div>
     ${combos.length > 10 ? `<button class="show-more-btn" onclick="expanded.combos=!expanded.combos;render()">${expanded.combos ? t('showLess') : t('showAll')+' '+combos.length}</button>` : ''}
+    <div class="accordion-wrap">
+      <button class="accordion-btn${expanded.comboParts?' open':''}" onclick="expanded.comboParts=!expanded.comboParts;render()">
+        <span><i data-lucide="settings" class="sec-nav-lucide"></i> Bits &amp; Ratchets</span>
+        <span>${expanded.comboParts?'▲':'▼'}</span>
+      </button>
+      <div class="accordion-content${expanded.comboParts?' open':''}">${expanded.comboParts ? renderParts(true) : ''}</div>
+    </div>
     ${inlineDonate()}`;
 }
 
 // ═══ TREND ═══
 function renderTrend() {
   const trends = dd().metaTrend;
-  if (!trends || trends.length === 0) return `<div class="section-title">📈 <em>${t('trend')}</em></div>${emptyState()}`;
+  if (!trends || trends.length === 0) return `<div class="section-title"><em>${t('trend')}</em></div>${emptyState()}`;
   const show = expanded.trend ? trends.length : 12;
 
   // top5 rising e falling
@@ -1142,7 +1328,7 @@ function renderTrend() {
   }
 
   return `
-    <div class="section-title">📈 <em>${t('trend')}</em></div>
+    <div class="section-title"><em>${t('trend')}</em></div>
     <div class="section-sub">${t('trendSub')}</div>
     <div class="trend-gainers-losers">
       <div class="trend-bar-card">
@@ -1158,9 +1344,9 @@ function renderTrend() {
       <div class="card-title">${t('trendSnap')}</div>
       <div class="trend-grid">${trends.slice(0,show).map(tr => {
         let icon, cls;
-        if (tr.trendPct > 0) { icon='📈'; cls='trend-up'; }
-        else if (tr.trendPct < 0) { icon='📉'; cls='trend-down'; }
-        else { icon='➡️'; cls='trend-stable'; }
+        if (tr.trendPct > 0) { icon='<i data-lucide="trending-up" class="trend-lucide up"></i>'; cls='trend-up'; }
+        else if (tr.trendPct < 0) { icon='<i data-lucide="trending-down" class="trend-lucide down"></i>'; cls='trend-down'; }
+        else { icon='<i data-lucide="minus" class="trend-lucide stable"></i>'; cls='trend-stable'; }
         const pct = Math.abs(tr.trendPct) > 999 ? '999+' : Math.abs(tr.trendPct);
         const sign = tr.trendPct > 0 ? '+' : tr.trendPct < 0 ? '\u2212' : '';
         // sparkline inline
@@ -1180,13 +1366,12 @@ function renderTrend() {
 }
 
 // ═══ BITS & RATCHETS ═══
-function renderParts() {
+function renderParts(inline) {
   const bits = dd().metaBits, rats = dd().metaRatchets;
-  if (!bits || bits.length === 0 || !rats || rats.length === 0) return `<div class="section-title">⚙️ Bits & Ratchets</div>${emptyState()}`;
+  if (!bits || bits.length === 0 || !rats || rats.length === 0) return inline ? emptyState() : `<div class="section-title">Bits & Ratchets</div>${emptyState()}`;
   const maxB = bits[0].pts, maxR = rats[0].pts;
   return `
-    <div class="section-title">⚙️ Bits & Ratchets</div>
-    <div class="section-sub">${t('partsSub')}</div>
+    ${inline ? '' : '<div class="section-title">Bits & Ratchets</div><div class="section-sub">'+t('partsSub')+'</div>'}
     <div class="dual-grid">
       <div class="card">
         <div class="card-title" style="color:var(--secondary)">${t('bits')}</div>
@@ -1203,16 +1388,15 @@ function renderParts() {
         </div>`).join('')}
       </div>
     </div>
-    ${inlineDonate()}`;
+    ${inline ? '' : inlineDonate()}`;
 }
 
 // ═══ SYNERGIES ═══
-function renderSynergies() {
+function renderSynergies(inline) {
   const syns = dd().synergies;
-  if (!syns || syns.length === 0) return `<div class="section-title">🔗 <em>${t('synergies')}</em></div>${emptyState()}`;
+  if (!syns || syns.length === 0) return inline ? emptyState() : `<div class="section-title"><em>${t('synergies')}</em></div>${emptyState()}`;
   return `
-    <div class="section-title">🤝 <em>${t('synergies')}</em></div>
-    <div class="section-sub">${t('synSub')}</div>
+    ${inline ? '' : '<div class="section-title"><em>'+t('synergies')+'</em></div><div class="section-sub">'+t('synSub')+'</div>'}
     <div class="syn-grid">${syns.map(s => `
       <div class="syn-card">
         <div class="syn-blade">${s.blade}</div>
@@ -1222,16 +1406,15 @@ function renderSynergies() {
         }).join('')}</div>
       </div>`).join('')}
     </div>
-    ${inlineDonate()}`;
+    ${inline ? '' : inlineDonate()}`;
 }
 
 // ═══ EFFICIENCY ═══
-function renderEfficiency() {
+function renderEfficiency(inline) {
   const eff = dd().efficiency;
-  if (!eff || eff.length === 0) return `<div class="section-title">📊 <em>${t('efficiency')}</em></div>${emptyState()}`;
+  if (!eff || eff.length === 0) return inline ? emptyState() : `<div class="section-title"><em>${t('efficiency')}</em></div>${emptyState()}`;
   return `
-    <div class="section-title">💡 <em>${t('efficiency')}</em> <span class="info-tip">?<span class="tip-text">${t('tipBay')}</span></span></div>
-    <div class="section-sub">${t('effSub')}</div>
+    ${inline ? '' : '<div class="section-title"><em>'+t('efficiency')+'</em> <span class="info-tip">?<span class="tip-text">'+t('tipBay')+'</span></span></div><div class="section-sub">'+t('effSub')+'</div>'}
     <div class="card">
       ${eff.map((e,i) => `
         <div class="eff-row" style="animation-delay:${i*0.04}s">
@@ -1243,7 +1426,7 @@ function renderEfficiency() {
           </div>
         </div>`).join('')}
     </div>
-    ${inlineDonate()}`;
+    ${inline ? '' : inlineDonate()}`;
 }
 
 // ═══ DONATE ═══
@@ -1259,10 +1442,10 @@ function renderDonate() {
       </div>
       <div class="donate-note">${t('donateNote')}</div>
       <div class="donate-what">
-        <div class="donate-what-item"><span class="donate-what-icon">📊</span>${t('donateW1')}</div>
-        <div class="donate-what-item"><span class="donate-what-icon">🚀</span>${t('donateW2')}</div>
-        <div class="donate-what-item"><span class="donate-what-icon">🛠️</span>${t('donateW3')}</div>
-        <div class="donate-what-item"><span class="donate-what-icon">❤️</span>${t('donateW4')}</div>
+        <div class="donate-what-item"><i data-lucide="bar-chart-2" class="donate-lucide"></i>${t('donateW1')}</div>
+        <div class="donate-what-item"><i data-lucide="rocket" class="donate-lucide"></i>${t('donateW2')}</div>
+        <div class="donate-what-item"><i data-lucide="wrench" class="donate-lucide"></i>${t('donateW3')}</div>
+        <div class="donate-what-item"><i data-lucide="heart" class="donate-lucide"></i>${t('donateW4')}</div>
       </div>
     </div>
     <div class="about-card">
@@ -1318,8 +1501,8 @@ function initCharts() {
             borderWidth: 1,
             titleColor: '#F97316',
             bodyColor: '#F0F0F0',
-            titleFont: { family: "'Bebas Neue', sans-serif", size: 14 },
-            bodyFont: { family: "'Rajdhani', sans-serif", size: 13, weight: '600' },
+            titleFont: { family: "'Barlow Condensed', sans-serif", size: 14, weight: '700' },
+            bodyFont: { family: "'Barlow Condensed', sans-serif", size: 13, weight: '500' },
             callbacks: {
               label: ctx => ` ${ctx.parsed.x.toLocaleString()} pts`
             }
@@ -1328,12 +1511,12 @@ function initCharts() {
         scales: {
           x: {
             grid: { color: 'rgba(42,42,42,0.8)' },
-            ticks: { color: '#888', font: { family: "'Rajdhani', sans-serif", weight: '600', size: 11 } },
+            ticks: { color: '#888', font: { family: "'Barlow Condensed', sans-serif", weight: '500', size: 11 } },
             border: { color: '#2A2A2A' }
           },
           y: {
             grid: { display: false },
-            ticks: { color: '#F0F0F0', font: { family: "'Rajdhani', sans-serif", weight: '700', size: 12 } },
+            ticks: { color: '#F0F0F0', font: { family: "'Barlow Condensed', sans-serif", weight: '600', size: 12 } },
             border: { color: '#2A2A2A' }
           }
         }
@@ -1393,9 +1576,9 @@ function render() {
     ['sec-blades', renderBlades],
     ['sec-combos', renderCombos],
     ['sec-trend', renderTrend],
-    ['sec-parts', renderParts],
-    ['sec-synergies', renderSynergies],
-    ['sec-efficiency', renderEfficiency],
+    ['sec-parts', () => renderParts(false)],
+    ['sec-synergies', () => renderSynergies(false)],
+    ['sec-efficiency', () => renderEfficiency(false)],
     ['sec-donate', renderDonate],
   ];
   // Render only active section
@@ -1411,6 +1594,7 @@ function render() {
     }
   }
   requestAnimationFrame(initCharts);
+  if (window.lucide) lucide.createIcons();
 
   // restore search input focus and cursor position
   if (activeId === 'combo-search-input') {
