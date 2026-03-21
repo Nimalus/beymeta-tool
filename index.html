@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <!--
-  BeyMeta Tool Dashboard Template v2.5.1
+  BeyMeta Tool Dashboard Template v2.5.2
   Changelog:
+  - v2.5.2: Aggiunto tracking Google Analytics 4 (G-LRXE43K12V)
   - v2.5.1: Guard (s.bestBits||[]) in renderSynergies; guard (metaSharePeriods||[])
             per elemento in initCharts; ID sparkline con indice per unicità garantita
   - v2.5.0: CSS modernization — text-wrap: balance, color-mix() hover progressivo,
@@ -26,6 +27,13 @@
 -->
 <html lang="en">
 <head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LRXE43K12V"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-LRXE43K12V');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>BeyMeta Tool — by Nimalus</title>
